@@ -1,16 +1,17 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import { checkLinks } from './check-links'
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
-
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
-
-    core.setOutput('time', new Date().toTimeString())
+    // const text: string = core.getInput('text')
+    const mdFile =`
+[![license](https://img.shields.io/22github/license/felipefialho/frontend-challenges111.svg)](/license)
+[![license](https://img.shields.io/github/license/felipefialho/frontend-challenges.svg)](/license)
+`
+    const links = await checkLinks(mdFile)
+    links.broken.forEach(elem => {
+      console.log('Erro on', elem.name, elem.url, elem.status)
+    })
   } catch (error) {
     core.setFailed(error.message)
   }
